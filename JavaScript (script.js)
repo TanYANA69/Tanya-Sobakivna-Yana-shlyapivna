@@ -1,0 +1,87 @@
+// Чекаємо поки весь документ завантажиться
+document.addEventListener('DOMContentLoaded', function() {
+    const burger = document.getElementById('burger');
+    const nav = document.getElementById('main-nav');
+    const body = document.body;
+    const currentPage = window.location.pathname.split('/').pop();
+
+    console.log('Скрипт завантажено - мобільне меню тепер має працювати');
+
+    // Позначаємо активну сторінку в меню
+    function setActivePage() {
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === currentPage) {
+                link.classList.add('active');
+            }
+        });
+    }
+
+    // Функції для мобільного меню
+    function openMobileMenu() {
+        nav.classList.add('open');
+        body.classList.add('nav-open');
+        burger.classList.add('active');
+        burger.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeMobileMenu() {
+        nav.classList.remove('open');
+        body.classList.remove('nav-open');
+        burger.classList.remove('active');
+        burger.setAttribute('aria-expanded', 'false');
+    }
+
+    // Обробник для бургер-меню
+    if(burger && nav) {
+        burger.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (nav.classList.contains('open')) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        });
+
+        // Закриття меню при кліку поза ним
+        document.addEventListener('click', function(e) {
+            if (nav.classList.contains('open') && 
+                !nav.contains(e.target) && 
+                !burger.contains(e.target)) {
+                closeMobileMenu();
+            }
+        });
+
+        // Закриття меню при зміні розміру вікна
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768 && nav.classList.contains('open')) {
+                closeMobileMenu();
+            }
+        });
+
+        // Запобігання скролу при відкритому меню на мобільних
+        nav.addEventListener('touchmove', function(e) {
+            if (nav.classList.contains('open')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    }
+
+    // Встановлюємо активну сторінку
+    setActivePage();
+
+    // Додаємо обробники touch для кращої роботи на мобільних
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+        link.addEventListener('touchstart', function() {
+            this.style.transform = 'scale(0.95)';
+        });
+        
+        link.addEventListener('touchend', function() {
+            this.style.transform = 'scale(1)';
+        });
+    });
+});
